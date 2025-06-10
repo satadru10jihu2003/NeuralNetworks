@@ -1,0 +1,30 @@
+# Ignore Python virtual environments
+nnenv/
+
+# Ignore dataset and output folders
+Train/
+Test/
+Validation/
+
+# Ignore Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore model files and logs
+*.h5
+*.hdf5
+*.ckpt
+*.pb
+*.log
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore VSCode settings
+.vscode/
