@@ -84,59 +84,40 @@ strategy = tf.distribute.MirroredStrategy()  # Define a distribution strategy
 
 with strategy.scope():
     model = tf.keras.models.Sequential()
-
-    model.add(augmentation) # Adding data augmentation pipeline to the model
-
-    # Feature Learning Layers
-    model.add(tf.keras.layers.Conv2D(32,                  # Number of filters/Kernels
-                     (3,3),               # Size of kernels (3x3 matrix)
-                     strides = 1,         # Step size for sliding the kernel across the input (1 pixel at a time).
-                     padding = 'same',    # 'Same' ensures that the output feature map has the same dimensions as the input by padding zeros around the input. 
-                    input_shape = (256,256,3) # Input image shape
-                    ))
-    model.add(tf.keras.layers.Activation('relu'))# Activation function
+    model.add(tf.keras.Input(shape=(256, 256, 3)))
+    model.add(augmentation)
+    model.add(tf.keras.layers.Conv2D(32, (3,3), strides=1, padding='same'))
+    model.add(tf.keras.layers.Activation('relu'))
     model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.MaxPooling2D(pool_size = (2,2), padding = 'same'))
+    model.add(tf.keras.layers.MaxPooling2D(pool_size=(2,2), padding='same'))
     model.add(tf.keras.layers.Dropout(0.2))
-
-    model.add(tf.keras.layers.Conv2D(64, (5,5), padding = 'same'))
+    model.add(tf.keras.layers.Conv2D(64, (5,5), padding='same'))
     model.add(tf.keras.layers.Activation('relu'))
     model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.MaxPooling2D(pool_size = (2,2), padding = 'same'))
+    model.add(tf.keras.layers.MaxPooling2D(pool_size=(2,2), padding='same'))
     model.add(tf.keras.layers.Dropout(0.2))
-
-    model.add(tf.keras.layers.Conv2D(128, (3,3), padding = 'same'))
+    model.add(tf.keras.layers.Conv2D(128, (3,3), padding='same'))
     model.add(tf.keras.layers.Activation('relu'))
     model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.MaxPooling2D(pool_size = (2,2), padding = 'same'))
+    model.add(tf.keras.layers.MaxPooling2D(pool_size=(2,2), padding='same'))
     model.add(tf.keras.layers.Dropout(0.3))
-
-    model.add(tf.keras.layers.Conv2D(256, (5,5), padding = 'same'))
+    model.add(tf.keras.layers.Conv2D(256, (5,5), padding='same'))
     model.add(tf.keras.layers.Activation('relu'))
     model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.MaxPooling2D(pool_size = (2,2), padding = 'same'))
+    model.add(tf.keras.layers.MaxPooling2D(pool_size=(2,2), padding='same'))
     model.add(tf.keras.layers.Dropout(0.3))
-
-    model.add(tf.keras.layers.Conv2D(512, (3,3), padding = 'same'))
+    model.add(tf.keras.layers.Conv2D(512, (3,3), padding='same'))
     model.add(tf.keras.layers.Activation('relu'))
     model.add(tf.keras.layers.BatchNormalization())
-    model.add(tf.keras.layers.MaxPooling2D(pool_size = (2,2), padding = 'same'))
+    model.add(tf.keras.layers.MaxPooling2D(pool_size=(2,2), padding='same'))
     model.add(tf.keras.layers.Dropout(0.3))
-
-    # Flattening tensors
     model.add(tf.keras.layers.Flatten())
-
-    # Fully-Connected Layers
     model.add(tf.keras.layers.Dense(2048))
     model.add(tf.keras.layers.Activation('relu'))
     model.add(tf.keras.layers.Dropout(0.5))
+    model.add(tf.keras.layers.Dense(3, activation='softmax'))
+    model.compile(optimizer=tf.keras.optimizers.RMSprop(0.0001),
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
 
-    # Output Layer
-    model.add(tf.keras.layers.Dense(3, activation = 'softmax')) # Classification layer
-
-# Compiling model
-model.compile(optimizer = tf.keras.optimizers.RMSprop(0.0001), # 1e-4
-    loss = 'categorical_crossentropy', # Ideal for multiclass tasks
-    metrics = ['accuracy']) # Evaluation metric
-
-# model.fit(train, epochs=10, validation_data = test)
+model.fit(train, epochs=10, validation_data=test)
